@@ -5,6 +5,9 @@ export default function LatestNewsPage() {
     const newsItems = getLatestNews();
 
     return (
-        <NewsList newsItems={newsItems} />
+        <>
+            <h1>Latest News</h1>
+            <NewsList newsItems={newsItems} />
+        </>
     );
 }
