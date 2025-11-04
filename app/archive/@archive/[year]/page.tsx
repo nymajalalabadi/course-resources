@@ -1,7 +1,14 @@
-export default function ArchiveYearPage() {
+import NewsList from '@/components/news-list';
+import { getNewsForYear } from '@/lib/news';
+
+export default async function FilteredNewsPage({ params }) {
+    const param = await params;
+    const year = param.year;
+
+    const newsItems = getNewsForYear(year);
+
+
   return (
-    <div>
-      <h1>Archive Year Page</h1>
-    </div>
+      <NewsList newsItems={newsItems} />
   );
 }
