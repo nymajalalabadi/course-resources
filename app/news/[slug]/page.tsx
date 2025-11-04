@@ -7,7 +7,8 @@ export default async function NewsDetailPage( { params } ) {
   
   const newsItem = DUMMY_NEWS.find((newsItem) => newsItem.slug === newsSlug);
   
-  if (!newsItem) {
+  if (!newsItem) 
+  {
     notFound();
   }
 
