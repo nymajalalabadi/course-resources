@@ -21,6 +21,7 @@ export default async function FilteredNewsPage({ params }: { params: Promise<{ f
     if (selectedYear && selectedMonth) 
     {
         news = getNewsForYearAndMonth(selectedYear, selectedMonth);
+        links = [];
     }
 
     let newsContent = <p>No news found for this year.</p>;
@@ -29,6 +30,10 @@ export default async function FilteredNewsPage({ params }: { params: Promise<{ f
         newsContent = <NewsList newsItems={news} />;
     }
 
+    if (selectedYear && !getAvailableNewsYears().includes(+selectedYear) || selectedMonth && !getAvailableNewsMonths(selectedYear).includes(+selectedMonth)) 
+    {
+        throw new Error('Invalid year');
+    }
 
   return (
     <>
