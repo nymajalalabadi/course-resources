@@ -1,4 +1,3 @@
-import Image from "next/image";
 import logo from '@/assets/logo.jpg'
 import Link from "next/link";
 
