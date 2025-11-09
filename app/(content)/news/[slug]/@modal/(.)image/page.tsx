@@ -1,15 +1,15 @@
 'use client';
 import { notFound, useRouter } from 'next/navigation';
-import { use } from 'react';
-import { DUMMY_NEWS } from '@/dummy-news';
+import { getNewsItem } from '@/lib/news';
 
-export default function InterceptedImagePage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function InterceptedImagePage({ params }) {
+
+    const param = await params;
+    const newsSlug = param.slug;
 
     const router = useRouter();
 
-    const { slug: newsSlug } = use(params);
-
-    const newsItem = DUMMY_NEWS.find((newsItem) => newsItem.slug === newsSlug);
+    const newsItem = await getNewsItem(newsSlug);
 
     if (!newsItem) {
         notFound();
