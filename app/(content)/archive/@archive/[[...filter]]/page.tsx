@@ -3,6 +3,38 @@ import { getAvailableNewsMonths, getAvailableNewsYears, getNewsForYear, getNewsF
 import NewsList from '@/components/news-list';
 import { Suspense } from 'react';
 
+async function FilterHeader({ year, month }: { year?: string; month?: string }) {
+  const availableYears = await getAvailableNewsYears();
+    let links = await availableYears;
+
+    if (year && !month) 
+    {
+        links = getAvailableNewsMonths(year);
+    }
+
+    if (year && month) 
+    {
+        links = [];
+    }
+
+    return (
+    <header id="archive-header">
+     <nav id="archive-filter">
+      <ul>
+          {links.map((link) => {
+            const href = year ? `/archive/${year}/${link}` : `/archive/${link}`;
+            return (
+              <li key={link}>
+                  <Link href={href}>{link}</Link>
+              </li>
+            );
+          })}
+      </ul>
+     </nav>
+    </header>
+  );
+}
+
 async function FilteredNews({ year, month }: { year?: string; month?: string }) {
 
   let news;
@@ -51,23 +83,12 @@ export default async function FilteredNewsPage({ params }: { params: Promise<{ f
 
   return (
     <>
-    <header id="archive-header">
-    <nav id="archive-filter">
-      <ul>
-          {links.map((link) => {
-            const href = selectedYear ? `/archive/${selectedYear}/${link}` : `/archive/${link}`;
-            return (
-              <li key={link}>
-                  <Link href={href}>{link}</Link>
-              </li>
-            );
-          })}
-      </ul>
-    </nav>
-  </header>
-  <Suspense>
-    <FilteredNews year={selectedYear} month={selectedMonth} />
-  </Suspense>
+    <Suspense fallback={<p>Loading filter...</p>}>
+      <FilterHeader year={selectedYear} month={selectedMonth} />
+    </Suspense>
+    <Suspense fallback={<p>Loading news...</p>}>
+      <FilteredNews year={selectedYear} month={selectedMonth} />
+    </Suspense>
   </>
   );
 }
