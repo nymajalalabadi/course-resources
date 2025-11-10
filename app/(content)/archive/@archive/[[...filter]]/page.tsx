@@ -7,6 +7,11 @@ async function FilterHeader({ year, month }: { year?: string; month?: string }) 
   const availableYears = await getAvailableNewsYears();
     let links = await availableYears;
 
+    if (year && !availableYears.includes(year) || month && !getAvailableNewsMonths(year).includes(month)) 
+    {
+        throw new Error('Invalid year');
+    }
+
     if (year && !month) 
     {
         links = getAvailableNewsMonths(year);
@@ -21,7 +26,7 @@ async function FilterHeader({ year, month }: { year?: string; month?: string }) 
     <header id="archive-header">
      <nav id="archive-filter">
       <ul>
-          {links.map((link) => {
+          {links.map((link: string) => {
             const href = year ? `/archive/${year}/${link}` : `/archive/${link}`;
             return (
               <li key={link}>
@@ -62,24 +67,6 @@ export default async function FilteredNewsPage({ params }: { params: Promise<{ f
     const selectedYear = filter?.[0];
     const selectedMonth = filter?.[1];
 
-    const availableYears = await getAvailableNewsYears();
-    let links = await availableYears;
-
-    if (selectedYear && !selectedMonth) 
-    {
-        links = getAvailableNewsMonths(selectedYear);
-    }
-
-    if (selectedYear && selectedMonth) 
-    {
-        links = [];
-    }
-
-
-    if (selectedYear && !availableYears.includes(selectedYear) || selectedMonth && !getAvailableNewsMonths(selectedYear).includes(selectedMonth)) 
-    {
-        throw new Error('Invalid year');
-    }
 
   return (
     <>
