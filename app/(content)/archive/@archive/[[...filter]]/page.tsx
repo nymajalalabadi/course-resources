@@ -1,6 +1,27 @@
 import Link from 'next/link';
 import { getAvailableNewsMonths, getAvailableNewsYears, getNewsForYear, getNewsForYearAndMonth } from '@/lib/news';
 import NewsList from '@/components/news-list';
+import { Suspense } from 'react';
+
+async function FilteredNews({ year, month }: { year?: string; month?: string }) {
+
+  let news;
+
+  if (year && !month) {
+    news = await getNewsForYear(year);
+  }
+  if (year && month) {
+    news = await getNewsForYearAndMonth(year, month);
+  }
+
+  let newsContent = <p>No news found for this year.</p>;
+
+    if (news && news.length > 0) {
+        newsContent = <NewsList newsItems={news} />;
+    }
+
+  return newsContent;
+}
 
 export default async function FilteredNewsPage({ params }: { params: Promise<{ filter?: string[] }> }) {
     const param = await params;
@@ -9,28 +30,19 @@ export default async function FilteredNewsPage({ params }: { params: Promise<{ f
     const selectedYear = filter?.[0];
     const selectedMonth = filter?.[1];
 
-    let news;
-    let links = await getAvailableNewsYears();
+    const availableYears = await getAvailableNewsYears();
+    let links = await availableYears;
 
     if (selectedYear && !selectedMonth) 
     {
-        news = await getNewsForYear(selectedYear);
         links = getAvailableNewsMonths(selectedYear);
     }
 
     if (selectedYear && selectedMonth) 
     {
-        news = await getNewsForYearAndMonth(selectedYear, selectedMonth);
         links = [];
     }
 
-    let newsContent = <p>No news found for this year.</p>;
-
-    if (news && news.length > 0) {
-        newsContent = <NewsList newsItems={news} />;
-    }
-
-    const availableYears = await getAvailableNewsYears();
 
     if (selectedYear && !availableYears.includes(selectedYear) || selectedMonth && !getAvailableNewsMonths(selectedYear).includes(selectedMonth)) 
     {
@@ -53,7 +65,9 @@ export default async function FilteredNewsPage({ params }: { params: Promise<{ f
       </ul>
     </nav>
   </header>
-  {newsContent}
+  <Suspense>
+    <FilteredNews year={selectedYear} month={selectedMonth} />
+  </Suspense>
   </>
   );
 }
